@@ -1,9 +1,4 @@
-import random
-import time
-import string
-import json
-
-
+import random, time, string, json
 
 
 def generator(length : int):
