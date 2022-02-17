@@ -8,7 +8,9 @@ def generator(length : int):
     for i in range(length):
         password.append(random.choice(characterlist))
     print("\n" + "".join(password) + "\n\n")
-    time.sleep(1)
+    return "\n" + "".join(password) + "\n\n"
+
+
 
 def delete_sub_store_confirm(sub : str):
     confirm = input("Are you sure you want to delete this sub store? (y/n)\n")
@@ -57,7 +59,14 @@ def save_password_in_sub(sub : str):
         pswdemail = input("What email is this password linked to?\n")
         pswdusername = input("What username is this password linked to?\n")
         pswdnotes = input("What notes do you want to add to the password?\n")
-        pswdpswd = input("What password do you want to use?\n")
+        pswdpswd = input("What password do you want to use? Type \"generate\" to generate a random password\n")
+        if pswdpswd == "generate":
+            try:
+                len = int(input("What length do you want the password to be?\n"))
+                pswdpswd = generator(len)
+            except ValueError:
+                print("Invalid input. Automatically set length to 40.")
+                pswdpswd =generator(40)
         with open("passwords.json", "r+") as f:
             data=json.load(f)
         subdata = data["subs"][sub.lower()]
