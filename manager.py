@@ -38,7 +38,6 @@ def save_password_in_sub(sub : str):
         data=json.load(f)
     if sub.lower() in data["subs"]:
         pswdname = input("What is the new password name?\n")
-        cancel = False
         if pswdname.lower() in data["subs"][sub.lower()]:
             rep = input("That password name is already taken. Do you want to remove it and replace it with this new password? (y/n)\n")
             if rep.lower() == "y" or rep.lower() == "yes":
@@ -50,24 +49,23 @@ def save_password_in_sub(sub : str):
                 print("\nSuccessfully Deleted\n\n")
             elif rep.lower() == "n" or rep.lower() == "no":
                 print("Cancelled")
-                cancel=True
+                return
             else:
                 print("Invalid Option. Please try again.")
-                cancel=True
-        if cancel == False:
-            pswdweb = input("What website is this password for?\n")
-            pswdemail = input("What email is this password linked to?\n")
-            pswdusername = input("What username is this password linked to?\n")
-            pswdnotes = input("What notes do you want to add to the password?\n")
-            pswdpswd = input("What password do you want to use?\n")
-            with open("passwords.json", "r+") as f:
-                data=json.load(f)
-            subdata = data["subs"][sub.lower()]
-            subdata[pswdname.lower()] = {"name" : pswdname.lower(), "website" : pswdweb, "email" : pswdemail, "username" : pswdusername, "notes" : pswdnotes, "password" : pswdpswd}
-            with open("passwords.json", "w") as f:
-                json.dump(data, f)
-            print("\nSuccessfully created new password\n\n")
-            time.sleep(1)
+                return
+        pswdweb = input("What website is this password for?\n")
+        pswdemail = input("What email is this password linked to?\n")
+        pswdusername = input("What username is this password linked to?\n")
+        pswdnotes = input("What notes do you want to add to the password?\n")
+        pswdpswd = input("What password do you want to use?\n")
+        with open("passwords.json", "r+") as f:
+            data=json.load(f)
+        subdata = data["subs"][sub.lower()]
+        subdata[pswdname.lower()] = {"name" : pswdname.lower(), "website" : pswdweb, "email" : pswdemail, "username" : pswdusername, "notes" : pswdnotes, "password" : pswdpswd}
+        with open("passwords.json", "w") as f:
+            json.dump(data, f)
+        print("\nSuccessfully created new password\n\n")
+        time.sleep(1)
 
     else:
         psubs = input("Cannot find that sub. Do you want to see a list of your current sub stores? (y/n)\n")
