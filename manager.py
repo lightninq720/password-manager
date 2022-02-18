@@ -135,22 +135,24 @@ def edit_pswd_with_sub(sub : str):
 - username
 - notes
 - password\n"""))
-        print(edit.lower())
-        if edit.lower() != "email" or edit.lower() != "username" or edit.lower() != "notes" or edit.lower() != "password":
+        if edit.lower() == "email" or edit.lower() == "username" or edit.lower() == "notes" or edit.lower() == "password":
+            editto = input("What would you like to change this to?\n")
+            if edit.lower() == "email":
+                data["subs"][sub][pswd]["email"] = editto
+            elif edit.lower() == "username":
+                data["subs"][sub][pswd]["username"] = editto
+            elif edit.lower() == "notes":
+                data["subs"][sub][pswd]["notes"] = editto
+            elif edit.lower() == "password":
+                data["subs"][sub][pswd]["password"] = editto
+
+            with open("passwords.json", "w") as f:
+                json.dump(data, f)
+        else:
             print("Invalid input")
             time.sleep(1)
-            return
-        editto = "What would you like to change this to?\n"
-        if edit.lower() == "email":
-            data["subs"][sub][pswd]["email"] = editto
-        elif edit.lower() == "username":
-            data["subs"][sub][pswd]["username"] = editto
-        elif edit.lower() == "notes":
-            data["subs"][sub][pswd]["notes"] = editto
-        elif edit.lower() == "password":
-            data["subs"][sub][pswd]["password"] = editto
-    print("Invalid option")
-    return
+    else:
+        print("Invalid option")
 
 while True:
     option = input("""What would you like to use?:
