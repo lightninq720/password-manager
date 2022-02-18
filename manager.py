@@ -8,7 +8,9 @@ def generator(length : int):
     for i in range(length):
         password.append(random.choice(characterlist))
     print("\n" + "".join(password) + "\n\n")
-    time.sleep(1)
+    return "\n" + "".join(password) + "\n\n"
+
+
 
 def delete_sub_store_confirm(sub : str):
     confirm = input("Are you sure you want to delete this sub store? (y/n)\n")
@@ -38,7 +40,6 @@ def save_password_in_sub(sub : str):
         data=json.load(f)
     if sub.lower() in data["subs"]:
         pswdname = input("What is the new password name?\n")
-        cancel = False
         if pswdname.lower() in data["subs"][sub.lower()]:
             rep = input("That password name is already taken. Do you want to remove it and replace it with this new password? (y/n)\n")
             if rep.lower() == "y" or rep.lower() == "yes":
@@ -50,24 +51,30 @@ def save_password_in_sub(sub : str):
                 print("\nSuccessfully Deleted\n\n")
             elif rep.lower() == "n" or rep.lower() == "no":
                 print("Cancelled")
-                cancel=True
+                return
             else:
                 print("Invalid Option. Please try again.")
-                cancel=True
-        if cancel == False:
-            pswdweb = input("What website is this password for?\n")
-            pswdemail = input("What email is this password linked to?\n")
-            pswdusername = input("What username is this password linked to?\n")
-            pswdnotes = input("What notes do you want to add to the password?\n")
-            pswdpswd = input("What password do you want to use?\n")
-            with open("passwords.json", "r+") as f:
-                data=json.load(f)
-            subdata = data["subs"][sub.lower()]
-            subdata[pswdname.lower()] = {"name" : pswdname.lower(), "website" : pswdweb, "email" : pswdemail, "username" : pswdusername, "notes" : pswdnotes, "password" : pswdpswd}
-            with open("passwords.json", "w") as f:
-                json.dump(data, f)
-            print("\nSuccessfully created new password\n\n")
-            time.sleep(1)
+                return
+        pswdweb = input("What website is this password for?\n")
+        pswdemail = input("What email is this password linked to?\n")
+        pswdusername = input("What username is this password linked to?\n")
+        pswdnotes = input("What notes do you want to add to the password?\n")
+        pswdpswd = input("What password do you want to use? Type \"generate\" to generate a random password\n")
+        if pswdpswd == "generate":
+            try:
+                len = int(input("What length do you want the password to be?\n"))
+                pswdpswd = generator(len)
+            except ValueError:
+                print("Invalid input. Automatically set length to 40.")
+                pswdpswd =generator(40)
+        with open("passwords.json", "r+") as f:
+            data=json.load(f)
+        subdata = data["subs"][sub.lower()]
+        subdata[pswdname.lower()] = {"name" : pswdname.lower(), "website" : pswdweb, "email" : pswdemail, "username" : pswdusername, "notes" : pswdnotes, "password" : pswdpswd}
+        with open("passwords.json", "w") as f:
+            json.dump(data, f)
+        print("\nSuccessfully created new password\n\n")
+        time.sleep(1)
 
     else:
         psubs = input("Cannot find that sub. Do you want to see a list of your current sub stores? (y/n)\n")
@@ -112,13 +119,49 @@ def get_pswd_with_name(name : str):
     time.sleep(1)
     print("\n\n")
 
+def edit_pswd_with_sub(sub : str):
+    with open("passwords.json") as f:
+        data=json.load(f)
+    print(f"Passwords in {sub} sub store")
+    for pswds in data["subs"][sub]:
+        print(pswds)
+    pswd = input("Which password do you want to edit?\n")
+    if pswd.lower() in data["subs"][sub]:
+        with open("passwords.json") as f:
+            data=json.load(f)
+        edit = str(input("""What would you like to edit? Valid options:
+        
+- email
+- username
+- notes
+- password\n"""))
+        if edit.lower() == "email" or edit.lower() == "username" or edit.lower() == "notes" or edit.lower() == "password":
+            editto = input("What would you like to change this to?\n")
+            if edit.lower() == "email":
+                data["subs"][sub][pswd]["email"] = editto
+            elif edit.lower() == "username":
+                data["subs"][sub][pswd]["username"] = editto
+            elif edit.lower() == "notes":
+                data["subs"][sub][pswd]["notes"] = editto
+            elif edit.lower() == "password":
+                data["subs"][sub][pswd]["password"] = editto
+
+            with open("passwords.json", "w") as f:
+                json.dump(data, f)
+        else:
+            print("Invalid input")
+            time.sleep(1)
+    else:
+        print("Invalid option")
+
 while True:
     option = input("""What would you like to use?:
     
 - Password generator (ID: gen)
 - Get a saved password (ID: gep)
 - Save a new password (ID: sap)
-- Create a new sub store (ID: sub)\n""")
+- Create a new sub store (ID: sub)
+- Edit a password (ID: edp)\n""")
     if option.lower() == "gen":
         try:
             charamnt = int(input("How many characters do you want the password to be?\n"))
@@ -164,6 +207,11 @@ while True:
             else:
                 print("Couldn't find password.")
                 time.sleep(1)
-        
+    elif option.lower() == "edp":
+        sub = input("What sub store is the password in?\n")
+        with open("passwords.json") as f:
+            data = json.load(f)
+        if sub.lower() in data["subs"]:
+            edit_pswd_with_sub(sub.lower())
     else:
         print("Invalid Option")
