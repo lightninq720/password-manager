@@ -137,14 +137,7 @@ def edit_pswd_with_sub(sub : str):
 - password\n"""))
         if edit.lower() == "email" or edit.lower() == "username" or edit.lower() == "notes" or edit.lower() == "password":
             editto = input("What would you like to change this to?\n")
-            if edit.lower() == "email":
-                data["subs"][sub][pswd]["email"] = editto
-            elif edit.lower() == "username":
-                data["subs"][sub][pswd]["username"] = editto
-            elif edit.lower() == "notes":
-                data["subs"][sub][pswd]["notes"] = editto
-            elif edit.lower() == "password":
-                data["subs"][sub][pswd]["password"] = editto
+            data["subs"][sub][pswd][edit.lower()] = editto
 
             with open("passwords.json", "w") as f:
                 json.dump(data, f)
